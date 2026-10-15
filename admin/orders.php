@@ -3,20 +3,24 @@ require __DIR__ . '/../config.php';
 require __DIR__ . '/../includes/auth.php';
 
 $status = $_GET['status'] ?? '';
-if (!isset(ORDER_STATUS[$status])) $status = '';    // chỉ nhận trạng thái có trong bảng (whitelist), mã lạ coi như không lọc
+
+// chỉ nhận trạng thái có trong bảng, mã lạ coi như ko lọc
+if (!isset(ORDER_STATUS[$status])) $status = '';    
 $phone = trim($_GET['phone'] ?? '');
 
 $sql  = 'SELECT * FROM orders WHERE 1=1';
 $args = [];
 if ($status !== '') { $sql .= ' AND status = ?';  $args[] = $status; }
 if ($phone !== '')  { $sql .= ' AND phone LIKE ?'; $args[] = '%' . $phone . '%'; }
-$orders = db($sql . ' ORDER BY created_at DESC LIMIT 300', $args)->fetchAll();   // LIMIT: không tải hàng nghìn đơn cùng lúc
+
+// limit ko tải hàng nghìn đơn cùng lúc
+$orders = db($sql . ' ORDER BY created_at DESC LIMIT 300', $args)->fetchAll();   
 
 $title = 'Đơn hàng';
 require __DIR__ . '/includes/admin_header.php';
 ?>
 <h1>Đơn hàng</h1>
-<!-- Form lọc dùng GET: URL thành ?status=done&phone=090 nên lưu link/F5 vẫn giữ bộ lọc -->
+<!-- Form lọc dùng GET -->
 <form class="searchbar" method="get" action="<?= url('admin/orders.php') ?>">
   <input type="search" name="phone" value="<?= e($phone) ?>" placeholder="Tìm theo số điện thoại" aria-label="Số điện thoại">
   <select name="status" aria-label="Trạng thái">

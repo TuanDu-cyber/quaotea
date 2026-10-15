@@ -17,11 +17,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     redirect('cart.php');
 }
 
-// ---- 2. Hiển thị ----
+//Hiển thị 
 $lines = $_SESSION['cart'] ?? [];
 $total = cart_total($lines);
 
-// chữ khách đã gõ ở form đặt hàng lần trước (khi bị báo lỗi)
+// chữ khách đã gõ ở form đặt hàng lần trước khi bị báo lỗi
 $old   = $_SESSION['old'] ?? [];  
 unset($_SESSION['old']);
 
@@ -43,7 +43,7 @@ require __DIR__ . '/includes/header.php';
       <?php foreach ($lines as $l): ?>
       <li class="line">
         <div class="line-main">
-          <!-- Ảnh món: có ảnh thật thì hiện, chưa có thì hiện ly trà SVG (product_image đọc $l['image']) -->
+          <!-- Ảnh món có ảnh thật thì hiện ch có thì hiện ly trà SVG (product_image đọc $l['image']) -->
           <div class="line-thumb"><?php if (product_image($l)): ?><img src="<?= e(product_image($l)) ?>" alt="<?= e($l['name']) ?>"><?php else: echo cup_svg((int)$l['product_id']); endif; ?></div>
           <div>
             <strong><?= e($l['name']) ?></strong>
@@ -51,7 +51,7 @@ require __DIR__ . '/includes/header.php';
           </div>
         </div>
         <div class="line-actions">
-          <!-- Đổi số lượng là POST (không phải link) vì làm thay đổi dữ liệu. Số 0 = xoá dòng. -->
+          <!-- Đổi số lượng là POST ko phải link vì làm thay đổi dữ liệu. Số 0 = xoá dòng -->
           <form method="post" action="<?= url('cart.php') ?>" class="inline">
             <?= csrf_field() ?><input type="hidden" name="key" value="<?= e($l['key']) ?>">
             <input class="qty" type="number" name="qty" min="0" max="20" value="<?= (int)$l['qty'] ?>" aria-label="Số lượng">
@@ -77,7 +77,7 @@ require __DIR__ . '/includes/header.php';
       <label>Số điện thoại <input name="phone" required inputmode="tel" placeholder="0901234567" value="<?= e($old['phone'] ?? '') ?>" autocomplete="tel"></label>
       <label>Địa chỉ <input name="address" required maxlength="255" value="<?= e($old['address'] ?? '') ?>" autocomplete="street-address"></label>
       <label>Ghi chú <textarea name="note" rows="2" maxlength="255"><?= e($old['note'] ?? '') ?></textarea></label>
-      <!-- Chỉ có 1 phương thức nên hiển thị cố định (không lưu vào database) -->
+      <!-- Chỉ có 1 phương thức nên hiển thị cố định ko lưu vào database -->
       <div>
         <span class="pay-label">Phương thức thanh toán</span>
         <div class="pay-box"><span class="pay-radio" aria-hidden="true"></span>Thanh toán khi nhận hàng</div>

@@ -1,10 +1,13 @@
 <?php
 require __DIR__ . '/config.php';
 
-//Lấy dữ liệu
-$q   = trim($_GET['q'] ?? '');       
-$cat = (int)($_GET['cat'] ?? 0);    
+// Lấy từ khóa tìm kiếm từ URL mặc định rỗng và xóa khoảng trắng ở đầu/cuối
+$q = trim($_GET['q'] ?? '');
 
+// Lấy mã danh mục từ URL mặc định là 0 và chuyển thành số nguyên
+$cat = (int)($_GET['cat'] ?? 0);
+
+//Lấy dữ liệu ra mảng
 $categories = db('SELECT * FROM categories ORDER BY id')->fetchAll();
 
 // SQL nối dần theo điều kiện khách chọn (nối thêm ' AND ...')
@@ -12,8 +15,14 @@ $categories = db('SELECT * FROM categories ORDER BY id')->fetchAll();
 $sql  = 'SELECT p.*, c.name AS category_name FROM products p
          JOIN categories c ON c.id = p.category_id WHERE p.is_active = 1';
 $args = [];
-if ($q !== '') { $sql .= ' AND p.name LIKE ?';     $args[] = '%' . $q . '%'; }
-if ($cat)      { $sql .= ' AND p.category_id = ?'; $args[] = $cat; }
+if ($q !== '') {
+  $sql .= ' AND p.name LIKE ?';
+  $args[] = '%' . $q . '%';
+}
+if ($cat) {
+  $sql .= ' AND p.category_id = ?';
+  $args[] = $cat;
+}
 $products = db($sql . ' ORDER BY p.category_id, p.id', $args)->fetchAll();
 
 // Hiển thị
@@ -33,7 +42,7 @@ require __DIR__ . '/includes/header.php';
   <a class="chip <?= !$cat ? 'on' : '' ?>" href="<?= url('menu.php' . ($q !== '' ? '?q=' . urlencode($q) : '')) ?>">Tất cả</a>
   <?php foreach ($categories as $c): ?>
     <a class="chip <?= $cat == $c['id'] ? 'on' : '' ?>"
-       href="<?= url('menu.php?cat=' . $c['id'] . ($q !== '' ? '&q=' . urlencode($q) : '')) ?>"><?= e($c['name']) ?></a>
+      href="<?= url('menu.php?cat=' . $c['id'] . ($q !== '' ? '&q=' . urlencode($q) : '')) ?>"><?= e($c['name']) ?></a>
   <?php endforeach; ?>
 </nav>
 
@@ -48,7 +57,8 @@ require __DIR__ . '/includes/header.php';
   <div class="grid">
     <?php foreach ($products as $i => $p): ?>
       <a class="card product" href="<?= url('mon.php?id=' . (int)$p['id']) ?>">
-        <div class="thumb"><?php if (product_image($p)): ?><img src="<?= e(product_image($p)) ?>" alt="<?= e($p['name']) ?>" loading="lazy"><?php else: echo cup_svg($i); endif; ?></div>
+        <div class="thumb"><?php if (product_image($p)): ?><img src="<?= e(product_image($p)) ?>" alt="<?= e($p['name']) ?>" loading="lazy"><?php else: echo cup_svg($i);
+                                                                                                                                          endif; ?></div>
         <div class="card-body">
           <p class="muted small"><?= e($p['category_name']) ?></p>
           <h3><?= e($p['name']) ?></h3>

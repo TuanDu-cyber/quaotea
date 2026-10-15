@@ -1,5 +1,5 @@
 <?php
-// Form thêm/sửa món + xử lý lưu. Có ?id=5 là SỬA món 5, không có là THÊM mới.
+// Form thêm/sửa món + xử lý lưu, có ?id=5 là SỬA món 5, không có là thêm ms
 require __DIR__ . '/../config.php';
 require __DIR__ . '/../includes/auth.php';
 
@@ -12,35 +12,44 @@ if ($id) {
 $editing = $product !== null;
 $categories = db('SELECT * FROM categories ORDER BY id')->fetchAll();
 
-//Xử lý form (POST)
+//Xử lý form POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_check();
-    $back = 'admin/product_form.php' . ($editing ? '?id=' . $id : '');   // lỗi thì quay lại đúng form này
+
+    // lỗi thì quay lại đúng form này
+    $back = 'admin/product_form.php' . ($editing ? '?id=' . $id : '');  
 
     $categoryId  = (int)($_POST['category_id'] ?? 0);
     $name        = trim($_POST['name'] ?? '');
     $description = trim($_POST['description'] ?? '');
     $price       = (int)($_POST['price'] ?? 0);
-    $isActive    = isset($_POST['is_active']) ? 1 : 0;      // checkbox chỉ có trong $_POST khi được tick
-    $image       = $product['image'] ?? null;               // mặc định giữ ảnh cũ
+
+    // checkbox chỉ có trong $_POST khi được tick
+    $isActive    = isset($_POST['is_active']) ? 1 : 0;   
+    
+    // mặc định giữ ảnh cũ
+    $image       = $product['image'] ?? null;              
 
     if ($name === '' || mb_strlen($name) > 150) { flash('error', 'Tên món không được để trống (tối đa 150 ký tự).'); redirect($back); }
     if ($price < 1000)                           { flash('error', 'Giá phải từ 1.000đ trở lên.'); redirect($back); }
     if (!$categoryId)                            { flash('error', 'Vui lòng chọn nhóm món.'); redirect($back); }
 
-    // Upload ảnh. $_FILES['image']['error'] === UPLOAD_ERR_OK nghĩa là có file và tải lên ổn.
+    // Upload ảnh $_FILES['image']['error'] === UPLOAD_ERR_OK nghĩa là có file và tải lên ổn
     $f = $_FILES['image'] ?? null;
     if ($f && $f['error'] === UPLOAD_ERR_OK) {
-        // Đọc loại file THẬT từ nội dung (không tin đuôi file hay Content-Type do khách gửi)
+        // Đọc loại file thật từ nội dung ko tin đuôi file hay Content-Type do khách gửi
         $mime = mime_content_type($f['tmp_name']);
         $ext  = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'][$mime] ?? null;
         if (!$ext)                        { flash('error', 'Ảnh phải là JPG, PNG hoặc WEBP.'); redirect($back); }
         if ($f['size'] > 2 * 1024 * 1024) { flash('error', 'Ảnh tối đa 2MB.'); redirect($back); }
-        $file = bin2hex(random_bytes(8)) . '.' . $ext;      // tên ngẫu nhiên: không trùng, không độc hại
+
+        // tên ngẫu nhiên: không trùng, không độc hại
+        $file = bin2hex(random_bytes(8)) . '.' . $ext;      
         if (!move_uploaded_file($f['tmp_name'], UPLOAD_DIR . '/' . $file)) {
             flash('error', 'Không lưu được ảnh, kiểm tra quyền ghi thư mục assets/uploads.'); redirect($back);
         }
-        remove_image($image);   // có ảnh mới thì xoá ảnh cũ
+        // có ảnh mới thì xoá ảnh cũ
+        remove_image($image);   
         $image = $file;
     }
 
@@ -61,7 +70,7 @@ $title = $editing ? 'Sửa món' : 'Thêm món';
 require __DIR__ . '/includes/admin_header.php';
 ?>
 <h1><?= e($title) ?></h1>
-<!-- enctype="multipart/form-data" BẮT BUỘC khi form có upload file, thiếu thì $_FILES rỗng -->
+<!-- enctype="multipart/form-data" bắt buộc khi form có upload file, thiếu thì $_FILES rỗng -->
 <form method="post" enctype="multipart/form-data" class="card form-card form narrow"
       action="<?= url('admin/product_form.php' . ($editing ? '?id=' . $id : '')) ?>">
   <?= csrf_field() ?>

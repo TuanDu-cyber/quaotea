@@ -2,19 +2,19 @@
 require __DIR__ . '/../config.php';
 require __DIR__ . '/../includes/auth.php';
 
-// Chỉ nhận 'week' hoặc 'month'. Giá trị này quyết định đoạn SQL nên phải lọc chặt.
+// Chỉ nhận 'week' hoặc 'month', giá trị này quyết định đoạn SQL nên phải lọc chặt
 $mode = ($_GET['mode'] ?? 'month') === 'week' ? 'week' : 'month';
 
 if ($mode === 'week') {
-    // WEEKDAY() = 0 cho thứ Hai. Trừ đi số ngày lệch để ra "ngày thứ Hai đầu tuần" làm khoá nhóm
+    // WEEKDAY() = 0 cho thứ Hai trừ đi số ngày lệch để ra "ngày thứ Hai đầu tuần" làm khoá nhóm
     $key   = "DATE_FORMAT(DATE_SUB(DATE(created_at), INTERVAL WEEKDAY(created_at) DAY), '%Y-%m-%d')";
     $since = 'DATE_SUB(CURDATE(), INTERVAL 12 WEEK)';
 } else {
     $key   = "DATE_FORMAT(created_at, '%Y-%m')";
     $since = 'DATE_SUB(CURDATE(), INTERVAL 12 MONTH)';
 }
-// $key, $since do CHÍNH code chọn (không từ người dùng) nên nối thẳng vào SQL là an toàn.
-// GROUP BY gom các đơn cùng kỳ; SUM(status='done') đếm đơn hoàn thành; CASE chỉ cộng tiền đơn hoàn thành.
+
+// GROUP BY gom các đơn cùng kỳ; SUM(status='done') đếm đơn hoàn thành, case chỉ cộng tiền đơn hoàn thành
 $rows = db("SELECT $key AS period,
                    COUNT(*) AS orders,
                    SUM(status = 'done') AS done_orders,

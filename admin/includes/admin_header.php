@@ -1,5 +1,5 @@
 <?php
-// Đầu trang quản trị: <head> + menu quản trị + nút đăng xuất.
+// Đầu trang quản trị <head> + menu quản trị + nút đăng xuất
 require __DIR__ . '/../../includes/head.php';
 ?>
 <header class="site-header">
@@ -10,7 +10,7 @@ require __DIR__ . '/../../includes/head.php';
     <a href="<?= url('admin/stats.php') ?>">Thống kê</a>
     <a href="<?= url('index.php') ?>" target="_blank" rel="noopener">Xem web</a>
   </nav>
-  <!-- Đăng xuất bằng POST + CSRF để người lạ không đăng xuất bạn bằng 1 đường link -->
+  <!-- Đăng xuất bằng POST + CSRF để người lạ ko đăng xuất bạn bằng 1 đường link -->
   <form method="post" action="<?= url('admin/logout.php') ?>" class="inline">
     <?= csrf_field() ?>
     <button class="btn btn-ghost btn-sm" type="submit">Đăng xuất (<?= e($_SESSION['admin_name'] ?? '') ?>)</button>

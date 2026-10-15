@@ -1,11 +1,15 @@
 <?php
 require __DIR__ . '/../config.php';
-require __DIR__ . '/../includes/auth.php';   // chưa đăng nhập thì bị đá về login
+
+// chưa đăng nhập thì bị đá về login
+require __DIR__ . '/../includes/auth.php';   
 
 $q = trim($_GET['q'] ?? '');
 $sql  = 'SELECT p.*, c.name AS category_name FROM products p JOIN categories c ON c.id = p.category_id WHERE 1=1';
 $args = [];
-if ($q !== '') { $sql .= ' AND p.name LIKE ?'; $args[] = '%' . $q . '%'; }  // admin xem cả món đã ẩn
+
+// admin xem cả món đã ẩn
+if ($q !== '') { $sql .= ' AND p.name LIKE ?'; $args[] = '%' . $q . '%'; }  
 $products = db($sql . ' ORDER BY p.category_id, p.id', $args)->fetchAll();
 
 $title = 'Quản lý món';

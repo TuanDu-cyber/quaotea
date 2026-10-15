@@ -1,5 +1,5 @@
 <?php
-// Xoá món. GET = trang hỏi xác nhận. POST + CSRF = xoá thật.
+// Xoá món, GET = trang hỏi xác nhận, POST + CSRF = xoá thật
 require __DIR__ . '/../config.php';
 require __DIR__ . '/../includes/auth.php';
 
@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     redirect('admin/products.php');
 }
 
-// GET: hỏi lại cho chắc 
+// GET hỏi lại cho chắc 
 $p = db('SELECT * FROM products WHERE id = ?', [(int)($_GET['id'] ?? 0)])->fetch();
 if (!$p) redirect('admin/products.php');
 
