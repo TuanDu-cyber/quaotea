@@ -1,6 +1,6 @@
 # Quào Tea – website đặt trà sữa (PHP thuần, mỗi trang một file)
 
-Website cho một tiệm trà sữa nhỏ, viết bằng **HTML + CSS + PHP thuần + MySQL**, không framework. Giao diện lấy cảm hứng từ https://quaotea.com/.
+Website cho một tiệm trà sữa nhỏ, viết bằng **HTML + CSS + PHP thuần + MySQL**, không framework. 
 
 ## Chức năng
 **Khách hàng (không cần tài khoản):** xem menu, lọc theo nhóm, tìm món, xem ảnh và mô tả món, chọn số lượng, giỏ hàng, đặt đồ uống, tra cứu đơn bằng số điện thoại.
